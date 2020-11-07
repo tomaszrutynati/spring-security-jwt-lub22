@@ -1,0 +1,22 @@
+package pl.sda.jwtlub22.api.user;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import pl.sda.jwtlub22.domain.user.User;
+import pl.sda.jwtlub22.domain.user.UserService;
+
+@RestController
+@RequestMapping("/user")
+@RequiredArgsConstructor
+public class UserEndpoint {
+
+    private final UserService userService;
+
+    @PostMapping
+    public void registerUser(@RequestBody User user) {
+        userService.create(user);
+    }
+}
