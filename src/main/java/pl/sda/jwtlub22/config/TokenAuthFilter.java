@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import pl.sda.jwtlub22.domain.user.UserRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -26,6 +27,7 @@ public class TokenAuthFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -50,12 +52,20 @@ public class TokenAuthFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
+        String username = ((User) authResult.getPrincipal()).getUsername();
+
         String token = JWT.create()
-                .withSubject(((User) authResult.getPrincipal()).getUsername())
+                .withSubject(objectMapper.writeValueAsString(prepareSubject(username)))
                 .withExpiresAt(new Date(System.currentTimeMillis() + 3_600_000))
                 .sign(Algorithm.HMAC512("Kurs SDA".getBytes()));
 
         response.setHeader("TOKEN", "Bearer " + token);
+    }
+
+    private TokenSubject prepareSubject(String username) {
+        return userRepository.findByUsername(username)
+                .map(usr -> new TokenSubject(usr.getUsername(), usr.getRole()))
+                .orElse(new TokenSubject());
     }
 
     @Getter

@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.sda.jwtlub22.domain.user.UserRepository;
 
 @Configuration
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SecurityDetailsService securityDetailsService;
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,8 +37,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/user").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new TokenAuthorizationFilter(authenticationManager()))
-                .addFilterBefore(new TokenAuthFilter(authenticationManager(), objectMapper),
+                .addFilter(new TokenAuthorizationFilter(authenticationManager(), objectMapper))
+                .addFilterBefore(new TokenAuthFilter(authenticationManager(), objectMapper, userRepository),
                         TokenAuthorizationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }

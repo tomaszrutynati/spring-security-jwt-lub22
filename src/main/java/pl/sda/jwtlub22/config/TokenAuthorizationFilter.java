@@ -2,9 +2,11 @@ package pl.sda.jwtlub22.config;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -14,11 +16,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class TokenAuthorizationFilter extends BasicAuthenticationFilter {
 
-    public TokenAuthorizationFilter(AuthenticationManager authenticationManager) {
+    private final ObjectMapper objectMapper;
+
+    public TokenAuthorizationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper) {
         super(authenticationManager);
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -32,14 +38,18 @@ public class TokenAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        String user = JWT.require(Algorithm.HMAC512("Kurs SDA".getBytes()))
+        String tokenSubjectJson = JWT.require(Algorithm.HMAC512("Kurs SDA".getBytes()))
                 .build()
                 .verify(header.replace("Bearer ", ""))
                 .getSubject();
 
-        if (user != null) {
+        if (tokenSubjectJson != null) {
+            TokenSubject tokenSubject = objectMapper.readValue(tokenSubjectJson, TokenSubject.class);
+
             UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                    new UsernamePasswordAuthenticationToken(
+                            tokenSubject.getUsername(), null,
+                            Collections.singletonList(new SimpleGrantedAuthority(tokenSubject.getRole())));
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
