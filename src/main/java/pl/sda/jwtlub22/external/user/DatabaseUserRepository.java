@@ -11,21 +11,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DatabaseUserRepository implements UserRepository {
 
-    private final JpaUserRepository jpaUserRepository;
+    private final MongoUserRepository mongoUserRepository;
 
     @Override
     public void create(User user) {
-        UserEntity entity = UserEntity.builder()
+        UserDocument entity = UserDocument.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .role(user.getRole())
                 .build();
-        jpaUserRepository.save(entity);
+        mongoUserRepository.save(entity);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return jpaUserRepository.findByUsername(username)
+        return mongoUserRepository.findByUsername(username)
                 .map(ent -> new User(ent.getId(), ent.getUsername(),
                         ent.getPassword(), ent.getRole()));
     }

@@ -7,8 +7,8 @@ public interface CarRepository {
 
     void create(Car car);
     void update(Car car);
-    void delete(Long id);
-    Optional<Car> getById(Long id);
+    void delete(String id);
+    Optional<Car> getById(String id);
     List<Car> getAll();
 
 }

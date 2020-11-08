@@ -4,20 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-@Entity
-@Table(name = "cars")
-public class CarEntity {
+@Document(collection = "cars")
+public class CarDocument {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String manufacturer;
     private String model;

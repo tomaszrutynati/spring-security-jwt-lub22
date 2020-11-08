@@ -18,10 +18,10 @@ public class CarService {
     public void update(Car car) {
         carRepository.update(car);
     }
-    public void delete(Long id) {
+    public void delete(String id) {
         carRepository.delete(id);
     }
-    public Optional<Car> getById(Long id) {
+    public Optional<Car> getById(String id) {
         return carRepository.getById(id);
     }
     public List<Car> getAll() {

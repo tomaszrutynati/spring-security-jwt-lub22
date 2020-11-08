@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Setter
 @Getter
 public class User {
-    private Long id;
+    private String id;
     private String username;
     private String password;
     private String role;

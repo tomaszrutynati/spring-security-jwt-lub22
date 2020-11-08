@@ -33,7 +33,7 @@ public class CarEndpoint {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity getOne(@PathVariable Long id) {
+    ResponseEntity getOne(@PathVariable String id) {
         return carService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -41,7 +41,7 @@ public class CarEndpoint {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteCar(@PathVariable Long id) {
+    void deleteCar(@PathVariable String id) {
         carService.delete(id);
     }
 }

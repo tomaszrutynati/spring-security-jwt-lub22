@@ -12,42 +12,42 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class DatabaseCarRepository implements CarRepository {
-    private final JpaCarRepository jpaCarRepository;
+    private final MongoCarRepository mongoCarRepository;
 
     @Override
     public void create(Car car) {
-        CarEntity carEntity = CarEntity.builder()
+        CarDocument carDocument = CarDocument.builder()
                 .manufacturer(car.getManufacturer())
                 .model(car.getModel())
                 .build();
-        jpaCarRepository.save(carEntity);
+        mongoCarRepository.save(carDocument);
     }
 
     @Override
     public void update(Car car) {
-        CarEntity carEntity = CarEntity.builder()
+        CarDocument carDocument = CarDocument.builder()
                 .id(car.getId())
                 .manufacturer(car.getManufacturer())
                 .model(car.getModel())
                 .build();
-        jpaCarRepository.save(carEntity);
+        mongoCarRepository.save(carDocument);
     }
 
     @Override
-    public void delete(Long id) {
-        jpaCarRepository.deleteById(id);
+    public void delete(String id) {
+        mongoCarRepository.deleteById(id);
     }
 
     @Override
-    public Optional<Car> getById(Long id) {
-        return jpaCarRepository.findById(id)
+    public Optional<Car> getById(String id) {
+        return mongoCarRepository.findById(id)
                 .map(ent -> new Car(ent.getId(),
                         ent.getManufacturer(), ent.getModel()));
     }
 
     @Override
     public List<Car> getAll() {
-        return jpaCarRepository.findAll().stream()
+        return mongoCarRepository.findAll().stream()
                 .map(ent -> new Car(ent.getId(),
                         ent.getManufacturer(), ent.getModel()))
                 .collect(Collectors.toList());
